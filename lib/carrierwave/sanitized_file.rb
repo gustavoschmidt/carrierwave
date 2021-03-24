@@ -3,7 +3,6 @@
 require 'pathname'
 require 'active_support/core_ext/string/multibyte'
 require 'mime/types'
-require 'mimemagic'
 
 module CarrierWave
 
@@ -247,7 +246,6 @@ module CarrierWave
     def content_type
       @content_type ||=
         existing_content_type ||
-        mime_magic_content_type ||
         mime_types_content_type
     end
 
@@ -312,12 +310,6 @@ module CarrierWave
       if @file.respond_to?(:content_type) && @file.content_type
         @file.content_type.to_s.chomp
       end
-    end
-
-    def mime_magic_content_type
-      MimeMagic.by_magic(File.open(path)).try(:type) if path
-    rescue Errno::ENOENT
-      nil
     end
 
     def mime_types_content_type
